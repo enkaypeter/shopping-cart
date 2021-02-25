@@ -1,21 +1,31 @@
 import db from "../../loaders/database";
-const { QueryTypes } = require('sequelize');
-
+const { Products } =  db;
 export default class ProductRepository {
   constructor() {
     this.db = db.sequelize;
   }
 
 
-  async findAll() {
-    const fetchAllProductsQuery = await this.db.query('SELECT * from Products',
-    { type: QueryTypes.SELECT}).catch(err => console.error(err))
-    return fetchAllProductsQuery;
+  async getById(productId) {
+    const singleProducts = await Products.findAll({
+      where: {
+        id: productId
+      },
+      raw: true
+    });
+
+    const [singleProduct] = singleProducts;
+    return singleProduct;
+  }
+
+  static async findAll() {
+    const products =  await Products.findAll()
+    return products;
   }
 
   async getAllProducts() {
-    let allPizzas   = await this.findAll()
-    return allPizzas;
+    let allProducts   = await ProductRepository.findAll()
+    return allProducts;
   }
 
 }

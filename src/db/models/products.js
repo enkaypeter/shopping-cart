@@ -5,7 +5,6 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Products extends Model {
     static associate(models) {
-      // define association here
     }
   };
   Products.init({
@@ -16,7 +15,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     name: {
-      primaryKey: true,
       type: DataTypes.STRING,
       allowNull: false
     },
@@ -40,17 +38,18 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM('out_of_stock', 'in_stock', 'running_low'),
       allowNull: false
     },
-    createdAt: {
+    created_at: {
       allowNull: false,
       type: DataTypes.DATE
     },
-    updatedAt: {
-      allowNull: false,
+    updated_at: {
+      allowNull: true,
       type: DataTypes.DATE
     }
   }, {
     sequelize,
     modelName: 'Products',
+    underscored: true,
   });
   return Products;
 };
