@@ -9,6 +9,37 @@ export default class CartService extends CartRepository {
     this.response = {}
   }
 
+  getNewProductQuantity(existingCartQty, productQty, incomingCartQty) {
+    let newProductQuantity;
+    const incomingQuantity = incomingCartQty;
+    const existingQuantity = existingCartQty;
+
+    if(incomingQuantity < existingQuantity) {
+      newProductQuantity = productQty + Math.abs(existingQuantity - incomingQuantity)
+    } else if (incomingQuantity > existingQuantity) {
+      newProductQuantity = productQty - Math.abs(existingQuantity - incomingQuantity)
+    } else { // if incomingQuantity and existingQuantity is the same return cartItemData
+      return null; // no action is being performed because it's a duplicate request
+    }
+    return newProductQuantity;
+  }
+
+  getDeductProductPayload(productId, newProductQuantity) {
+    let deductProductPayload = {
+      productId,
+      quantity: newProductQuantity
+    }
+
+    if(newProductQuantity == 10) {
+      deductProductPayload.stock_level = 'running_low'
+    } else if (newProductQuantity == 0) {
+      deductProductPayload.stock_level = 'out_of_stock'
+    }
+
+    return deductProductPayload;
+  }
+
+
   async addToCart (cartItemData) {
     let newProductQuantity;
     let cart = await this.getCartById(1);
@@ -25,30 +56,17 @@ export default class CartService extends CartRepository {
     // check if the product already exists in cart
     let getcartItemResponse = await this.getCartItem({productId: productId});
     if(getcartItemResponse !== null) {
-      const incomingQuantity = cartItemData.quantity;
-      const existingQuantity = getcartItemResponse.quantity;
-      if(incomingQuantity < existingQuantity) {
-        newProductQuantity = singleProduct.quantity + Math.abs(existingQuantity - incomingQuantity)
-      } else if (incomingQuantity > existingQuantity) {
-        newProductQuantity = singleProduct.quantity - Math.abs(existingQuantity - incomingQuantity)
-      } else { // if incomingQuantity and existingQuantity is the same return cartItemData
-        return cartItemData; // no action is being performed because it's a duplicate request
+      newProductQuantity = this.getNewProductQuantity(getcartItemResponse.quantity, singleProduct.quantity, cartItemData.quantity);
+      if (newProductQuantity == null) {
+        return cartItemData;
       }
     } else {
       newProductQuantity = singleProduct.quantity - cartItemData.quantity;
     };
 
-    let deductProductPayload = {
-      productId: singleProduct.product_id,
-      quantity: newProductQuantity
-    }
-    if(newProductQuantity == 10) {
-      deductProductPayload.stock_level = 'running_low'
-    } else if (newProductQuantity == 0) {
-      deductProductPayload.stock_level = 'out_of_stock'
-    }
 
-    
+
+    const deductProductPayload = this.getDeductProductPayload(singleProduct.id, newProductQuantity);    
     try {
       // update product inventory
       await productsRepository.updateProductInventory(productId, deductProductPayload);
@@ -77,16 +95,45 @@ export default class CartService extends CartRepository {
   }
 
   async makeUpdateCart(cartItemData){
-    let cart = await this.getCartById(1);
+    let newProductQuantity;
+    const productId = cartItemData.product_id;
 
-    return cart;
-    // get product object
+    const singleProduct = await productsRepository.getById(cartItemData.product_id);
+    if(singleProduct.quantity < cartItemData.quantity) {
+      throw new Error ("quantity requested is more than inventory available.")
+    };
 
+    // check if the product already exists in cart
+    let getcartItemResponse = await this.getCartItem({productId: productId});
+    if(getcartItemResponse == null) {
+      throw new Error ("product does not exist in specified cart.")
+    }
 
-    // perform update logic
+    if(cartItemData.quantity == 0){
+      throw new Error (`cannot update cart quantity with ${cartItemData.quantity}.`)
+    }
 
-    //return response
+    if(getcartItemResponse !== null) {
+      newProductQuantity = this.getNewProductQuantity(getcartItemResponse.quantity, singleProduct.quantity, cartItemData.quantity);
+      if (newProductQuantity == null) {
+        return cartItemData;
+      }
+    }
 
+    const deductProductPayload = this.getDeductProductPayload(singleProduct.id, newProductQuantity);    
+    try {
+      // update product inventory
+      await productsRepository.updateProductInventory(productId, deductProductPayload);
+      
+      const { quantity } = cartItemData;
+      const updateCartItemPayload = { quantity };
 
+      // update cartItem with new quanitity
+      let saveCartItemsResponse = await this.updateCartItem(updateCartItemPayload, {productId: productId});
+      return saveCartItemsResponse;
+    } catch (error) {
+      console.error(error);
+      throw new Error(error);      
+    }
   }
 }
