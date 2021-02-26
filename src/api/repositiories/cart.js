@@ -1,8 +1,5 @@
-import { query } from "express";
 import db from "../../loaders/database";
-import ProductRepository from "../repositiories/products";
-
-const { cartItems, carts, products } =  db;
+const { cartItems, carts } =  db;
 export default class CartRepository {
   constructor() {
     this.db = db.sequelize;
