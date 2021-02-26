@@ -8,7 +8,8 @@ const headers = {
 module.exports = {
   add: async (req, res) => {
     try {
-      const response = await cartService.addToCart();
+      const { body } = req;
+      const response = await cartService.addToCart(body);
       
       return {
         headers,
@@ -29,5 +30,9 @@ module.exports = {
         }
       }
     }
+  },
+
+  update: async (req, res) => {
+
   }
 }

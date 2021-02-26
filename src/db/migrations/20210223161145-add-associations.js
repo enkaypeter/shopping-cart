@@ -4,8 +4,8 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     // CartItem belongsTo Cart
     return queryInterface.addColumn(
-      'CartItems', // Source model
-      'cart_id',   // foreign key
+      'cartItems', // Source model
+      'cartId',   // foreign key
       {
         type: Sequelize.INTEGER,
         references: {
@@ -19,8 +19,8 @@ module.exports = {
     // CartItem hasMany products 
     .then(() => {
       return queryInterface.addColumn(
-        'CartItems',
-        'product_id',
+        'cartItems',
+        'productId',
         {
           type: Sequelize.INTEGER,
           references: {
@@ -36,11 +36,11 @@ module.exports = {
 
   down: async (queryInterface, Sequelize) => {
     return queryInterface.removeColumn(
-      'CartItems', // Source model
-      'cart_id' // foreign key
+      'cartItems', // Source model
+      'cartId' // foreign key
     ).then(() => {
-      'CartItems',
-      'product_id'
+      'cartItems',
+      'productId'
     })
   }
 };

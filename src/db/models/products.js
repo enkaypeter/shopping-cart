@@ -3,11 +3,11 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Products extends Model {
+  class products extends Model {
     static associate(models) {
     }
   };
-  Products.init({
+  products.init({
     id: {
       primaryKey: true,
       type: DataTypes.INTEGER,
@@ -38,18 +38,17 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM('out_of_stock', 'in_stock', 'running_low'),
       allowNull: false
     },
-    created_at: {
+    createdAt: {
       allowNull: false,
       type: DataTypes.DATE
     },
-    updated_at: {
+    updatedAt: {
       allowNull: true,
       type: DataTypes.DATE
     }
-  }, {
+}, {
     sequelize,
-    modelName: 'Products',
-    underscored: true,
+    modelName: 'products',
   });
-  return Products;
+  return products;
 };

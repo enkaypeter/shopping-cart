@@ -10,8 +10,8 @@ module.exports = {
         category: 'shoes',
         quantity: 15,
         stock_level: 'in_stock',
-        created_at: new Date(),
-        updated_at: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
       {
         name: 'Red Converse Allstars 43',
@@ -20,8 +20,8 @@ module.exports = {
         category: 'shoes',
         quantity: 25,
         stock_level: 'in_stock',
-        created_at: new Date(),
-        updated_at: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
       {
         name: 'White Nike Airmax 44',
@@ -30,8 +30,8 @@ module.exports = {
         category: 'shoes',
         quantity: 25,
         stock_level: 'in_stock',
-        created_at: new Date(),
-        updated_at: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
       {
         name: 'Black Nike Kobe-AD 45',
@@ -40,8 +40,8 @@ module.exports = {
         category: 'shoes',
         quantity: 25,
         stock_level: 'in_stock',
-        created_at: new Date(),
-        updated_at: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
       {
         name: 'Black Underarmour Currys 42',
@@ -50,8 +50,8 @@ module.exports = {
         category: 'shoes',
         quantity: 25,
         stock_level: 'in_stock',
-        created_at: new Date(),
-        updated_at: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
 
     ])

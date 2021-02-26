@@ -3,11 +3,11 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Carts extends Model {
+  class carts extends Model {
     static associate(models) {
     }
   };
-  Carts.init({
+  carts.init({
     id: {
       primaryKey: true,
       type: DataTypes.INTEGER,
@@ -42,19 +42,18 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true
     },
-    created_at: {
+    createdAt: {
       allowNull: false,
       type: DataTypes.DATE
     },
-    updated_at: {
+    updatedAt: {
       allowNull: true,
       type: DataTypes.DATE
     }
 
   }, {
     sequelize,
-    modelName: 'Carts',
-    underscored: true,
+    modelName: 'carts',
   });
-  return Carts;
+  return carts;
 };

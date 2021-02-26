@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Products', {
+    await queryInterface.createTable('products', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -32,12 +32,12 @@ module.exports = {
         type: Sequelize.ENUM('out_of_stock', 'in_stock', 'running_low'),
         allowNull: false
       },
-      created_at: {
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updated_at: {
-        allowNull: false,
+      updatedAt: {
+        allowNull: true,
         type: Sequelize.DATE
       }
     });
