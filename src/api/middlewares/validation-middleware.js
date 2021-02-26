@@ -48,7 +48,30 @@ const updateCartValidator = async (req, res, next) => {
   });
 }
 
+const deleteCartValidator = async (req, res, next) => {
+
+  const validationRule = {
+    "cart_id": "required|numeric|is_exists",
+    "product_id": "required|numeric|is_exists",
+  };
+  
+
+  await Validator(req.body, validationRule, {}, (err, status) => {
+    if(!status) {
+      res.status(412)
+      .send({
+        message: 'validation failed',
+        success: false,
+        data: err
+      });
+    } else {
+      next();
+    }
+  });
+}
+
 
 module.exports = {
-  addToCartValidator, updateCartValidator
+  addToCartValidator, updateCartValidator,
+  deleteCartValidator
 }
