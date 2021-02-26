@@ -1,11 +1,12 @@
 import  Validator from "validatorjs";
 import ProductRepository from "../repositiories/products";
+import CartRepository from "../repositiories/cart";
 
 const productRepo = new ProductRepository();
 const numeric = function (val) {
   let num;
 
-  num = Number(val); // tries to convert value to a number. useful if value is coming from form element
+  num = Number(val);
   if (typeof num === "number" && !isNaN(num) && typeof val !== "boolean") {
     return true;
   } else {
@@ -14,14 +15,22 @@ const numeric = function (val) {
 }
 
 Validator.registerAsync('is_exists', async (value,  attribute, data, passes) => {
-  let msg = `product_id does not exists.`;
+  let msg = `${data} does not exists.`;
   if(numeric(value) == false ){
     msg = `${value} should be a number.`
     passes(false, msg);
     return;
   };
-  let singleProduct = await productRepo.getById(value);  
-  singleProduct !== undefined ? passes() : passes(false, msg); // return false if product is not found
+
+  let getModelName = data.split("_id")[0];
+  if(getModelName == "cart"){
+    const cartRepo = new CartRepository();
+    let singleCart = await cartRepo.getCartById(value);
+    singleCart !== undefined ? passes() : passes(false, msg);
+  } else if (getModelName == "product") {
+    let singleProduct = await productRepo.getById(value);  
+    singleProduct !== undefined ? passes() : passes(false, msg); // return false if product is not found
+  }
 });
 
 Validator.register("is_decimal", (value, requirement, attribute) => {

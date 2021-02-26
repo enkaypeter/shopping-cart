@@ -75,4 +75,18 @@ export default class CartService extends CartRepository {
     }
 
   }
+
+  async makeUpdateCart(cartItemData){
+    let cart = await this.getCartById(1);
+
+    return cart;
+    // get product object
+
+
+    // perform update logic
+
+    //return response
+
+
+  }
 }
