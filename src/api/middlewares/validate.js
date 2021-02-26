@@ -38,14 +38,21 @@ Validator.registerAsync("is_valid", async (value, attribute, data, passes) => {
   const productId = attribute;
   const singleProduct = await productRepo.getById(productId);
   singleProduct == undefined ? passes(false) : singleProduct;
-  
-  if(singleProduct.price != value){
-    msg = `${data} has changed and is now ${singleProduct.price}`;
-    passes(false, msg);
-    return;
+  switch (data) {
+    case 'price':
+      msg = `${data} has changed and is now ${singleProduct.price}`
+      singleProduct.price != value ? passes(false, msg) : passes();
+      return;  
+    case 'sku': 
+      msg = `${data} is invalid. Please check and try again`
+      singleProduct.sku != value ? passes(false, msg) : passes();
+      return;
+    default:
+      passes(false)
+      break;
   }
   passes();
-
+  
 })
 
 Validator.registerAsync("is_available", async (value, attribute, data, passes) => {

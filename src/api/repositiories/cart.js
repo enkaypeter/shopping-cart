@@ -21,8 +21,14 @@ export default class CartRepository {
         id: cartId
       },
       raw: true
-    })
+    });
+    
     return carts;
+  }
+
+  async saveCartItems(cartId, payload) {
+    // const cartItems = await CartItems.create({});
+    return {}
   }
 
   async createDummyCart(){
