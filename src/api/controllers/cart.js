@@ -10,7 +10,6 @@ module.exports = {
     try {
       const { body } = req;
       const response = await cartService.addToCart(body);
-      
       return {
         headers,
         message: "item added to cart successfully",

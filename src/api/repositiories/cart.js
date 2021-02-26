@@ -26,10 +26,7 @@ export default class CartRepository {
 
   async updateById(payload, query){
     const updatedCartItem = await cartItems.update(payload, {
-      where: {
-        productId: 2
-      },
-      raw: true
+      where: query,
     })
 
     const [cartItemResponse] = updatedCartItem

@@ -9,19 +9,35 @@ export default class CartService extends CartRepository {
     this.response = {}
   }
 
-  async addToCart (saveProductPayload) {
+  async addToCart (cartItemData) {
+    let newProductQuantity;
     let cart = await this.getCartById(1);
-
+    const productId = cartItemData.product_id;
+    
     // create a dummy cart if a cart with id = 1 doesn't exist
     let cartResponse = cart == undefined ? await this.createDummyCart() : cart
     const cartId = cartResponse.id;
-    const singleProduct = await productsRepository.getById(saveProductPayload.product_id);
-    if(singleProduct.quantity < saveProductPayload.quantity) {
+    const singleProduct = await productsRepository.getById(cartItemData.product_id);
+    if(singleProduct.quantity < cartItemData.quantity) {
       throw new Error ("quantity requested is more than inventory available.")
     };
 
+    // check if the product already exists in cart
+    let getcartItemResponse = await this.getCartItem({productId: productId});
+    if(getcartItemResponse !== null) {
+      const incomingQuantity = cartItemData.quantity;
+      const existingQuantity = getcartItemResponse.quantity;
+      if(incomingQuantity < existingQuantity) {
+        newProductQuantity = singleProduct.quantity + Math.abs(existingQuantity - incomingQuantity)
+      } else if (incomingQuantity > existingQuantity) {
+        newProductQuantity = singleProduct.quantity - Math.abs(existingQuantity - incomingQuantity)
+      } else { // if incomingQuantity and existingQuantity is the same return cartItemData
+        return cartItemData; // no action is being performed because it's a duplicate request
+      }
+    } else {
+      newProductQuantity = singleProduct.quantity - cartItemData.quantity;
+    };
 
-    const newProductQuantity = singleProduct.quantity - saveProductPayload.quantity;
     let deductProductPayload = {
       productId: singleProduct.product_id,
       quantity: newProductQuantity
@@ -32,14 +48,13 @@ export default class CartService extends CartRepository {
       deductProductPayload.stock_level = 'out_of_stock'
     }
 
+    
     try {
       // update product inventory
-      const productId = saveProductPayload.product_id;
-      // const deductProductQuantity = await this.productsRepository.updateProductInventory(productId, deductProductPayload);
       await productsRepository.updateProductInventory(productId, deductProductPayload);
-
+      
       // create cartItems
-      const { price, sku, quantity } = saveProductPayload;
+      const { price, sku, quantity } = cartItemData;
       let saveCartItemPayload = {
         cartId: cartId,
         productId: productId,
@@ -49,8 +64,7 @@ export default class CartService extends CartRepository {
         created_at: new Date()
       };
 
-      let cartItemResponse = await this.getCartItem({productId: productId});
-      let saveCartItemsResponse = cartItemResponse !== null ? 
+      let saveCartItemsResponse = getcartItemResponse !== null ? 
         await this.updateCartItem(saveCartItemPayload, {productId: productId}) :
       await this.saveToCart(saveCartItemPayload)
 
