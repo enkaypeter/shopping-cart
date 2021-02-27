@@ -138,12 +138,29 @@ export default class CartService extends CartRepository {
   }
 
   async makeDelete(cartItemData){
+    const productId = cartItemData.product_id;
+
     // get product
-    
-    // replace product inventory
-    
-    // delete product from cartItem
-    return cartItemData;
+    const singleProduct = await productsRepository.getById(cartItemData.product_id);
+
+    // check if the product already exists in cart
+    let getcartItemResponse = await this.getCartItem({productId: productId});
+    if(getcartItemResponse == null) {
+      throw new Error ("product does not exist in specified cart.")
+    }
+  
+    const newProductQuantity = this.getNewProductQuantity(getcartItemResponse.quantity, singleProduct.quantity, 0);
+    const deductProductPayload = this.getDeductProductPayload(singleProduct.id, newProductQuantity);    
+
+    try {
+      // restore product inventory
+      await productsRepository.updateProductInventory(productId, deductProductPayload);
+      await this.deleteCartItemById({productId: singleProduct.id})
+      return cartItemData;
+    } catch (error) {
+      console.error(error);
+      throw new Error(error);      
+    }    
   }
 
   

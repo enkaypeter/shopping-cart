@@ -21,6 +21,12 @@ export default class CartRepository {
     return cart;
   }
 
+  async deleteById(query){
+    await cartItems.destroy({
+      where: query
+    });
+  }
+
   async updateById(payload, query){
     const updatedCartItem = await cartItems.update(payload, {
       where: query,
@@ -50,7 +56,9 @@ export default class CartRepository {
     return carts;
   }
 
-
+  async deleteCartItemById(payload) {
+    await this.deleteById(payload);
+  }
 
   async getCartById(cartId) {
     const carts = await this.findById(cartId)
