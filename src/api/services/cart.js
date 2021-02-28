@@ -9,7 +9,7 @@ export default class CartService extends CartRepository {
     this.response = {}
   }
 
-  getNewProductQuantity(existingCartQty, productQty, incomingCartQty) {
+  calculateNewProductQuantity(existingCartQty, productQty, incomingCartQty) {
     let newProductQuantity;
     const incomingQuantity = incomingCartQty;
     const existingQuantity = existingCartQty;
@@ -42,10 +42,10 @@ export default class CartService extends CartRepository {
 
   async addToCart (cartItemData) {
     let newProductQuantity;
-    let cart = await this.getCartById(1);
+    let cart = await this.getCartById(1); // assumes there's an already exisitng cart with an id of 1.
     const productId = cartItemData.product_id;
     
-    // create a dummy cart if a cart with id = 1 doesn't exist
+    // create a dummy cart if a cart with id = 1 doesn't exist.
     let cartResponse = cart == undefined ? await this.createDummyCart() : cart
     const cartId = cartResponse.id;
     const singleProduct = await productsRepository.getById(cartItemData.product_id);
@@ -53,10 +53,10 @@ export default class CartService extends CartRepository {
       throw new Error ("quantity requested is more than inventory available.")
     };
 
-    // check if the product already exists in cart
+    // check if the product already exists in cart.
     let getcartItemResponse = await this.getCartItem({productId: productId});
     if(getcartItemResponse !== null) {
-      newProductQuantity = this.getNewProductQuantity(getcartItemResponse.quantity, singleProduct.quantity, cartItemData.quantity);
+      newProductQuantity = this.calculateNewProductQuantity(getcartItemResponse.quantity, singleProduct.quantity, cartItemData.quantity);
       if (newProductQuantity == null) {
         return cartItemData;
       }
@@ -103,7 +103,7 @@ export default class CartService extends CartRepository {
       throw new Error ("quantity requested is more than inventory available.")
     };
 
-    // check if the product already exists in cart
+    // check if the product already exists in cart.
     let getcartItemResponse = await this.getCartItem({productId: productId});
     if(getcartItemResponse == null) {
       throw new Error ("product does not exist in specified cart.")
@@ -114,7 +114,7 @@ export default class CartService extends CartRepository {
     }
 
     if(getcartItemResponse !== null) {
-      newProductQuantity = this.getNewProductQuantity(getcartItemResponse.quantity, singleProduct.quantity, cartItemData.quantity);
+      newProductQuantity = this.calculateNewProductQuantity(getcartItemResponse.quantity, singleProduct.quantity, cartItemData.quantity);
       if (newProductQuantity == null) {
         return cartItemData;
       }
@@ -149,7 +149,7 @@ export default class CartService extends CartRepository {
       throw new Error ("product does not exist in specified cart.")
     }
   
-    const newProductQuantity = this.getNewProductQuantity(getcartItemResponse.quantity, singleProduct.quantity, 0);
+    const newProductQuantity = this.calculateNewProductQuantity(getcartItemResponse.quantity, singleProduct.quantity, 0);
     const deductProductPayload = this.getDeductProductPayload(singleProduct.id, newProductQuantity);    
 
     try {

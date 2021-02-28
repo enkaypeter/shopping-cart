@@ -4,15 +4,18 @@ const fs        = require('fs');
 const path      = require('path');
 const Sequelize = require('sequelize');
 const basename  = path.basename(__filename);
-const config    =  require("../config");
-const { database } = config;
+
+const config = require("../config/config.json")[process.env.NODE_ENV];
 const db = {};
 
-const sequelize = new Sequelize(database.name, database.username, database.password, {
-  dialect: 'mysql',
-  host: database.host,
-  port: database.port
-});
+let sequelize;
+if (config.hasOwnProperty('use_env_variable')) {
+  sequelize = new Sequelize(process.env[config.use_env_variable]);
+} else {
+  sequelize = new Sequelize(
+    config.database, config.username, config.password, config
+  );
+}
 
 fs
   .readdirSync(process.cwd()+"/src/db/models")

@@ -1,0 +1,16 @@
+{
+  "development": {
+    "username": "root",
+    "password": "P@55phra5e",
+    "database": "shopping_cart",
+    "host": "localhost",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": "P@55phra5e",
+    "database": "shopping_cart_test",
+    "host": "localhost",
+    "dialect": "mysql"
+  }
+}

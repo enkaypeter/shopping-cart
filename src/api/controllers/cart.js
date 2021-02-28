@@ -6,7 +6,7 @@ const headers = {
 };
 
 module.exports = {
-  add: async (req, res) => {
+  addItem: async (req, res) => {
     try {
       const { body } = req;
       const response = await cartService.addToCart(body);
@@ -31,7 +31,7 @@ module.exports = {
     }
   },
 
-  update: async (req, res) => {
+  updateItem: async (req, res) => {
     try {
       const { body } = req;
       const response = await cartService.makeUpdateCart(body);

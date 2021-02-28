@@ -16,7 +16,7 @@ const addToCartValidator = async (req, res, next) => {
       res.status(412)
       .send({
         message: 'validation failed',
-        success: false,
+        status: "error",
         data: err
       });
     } else {
@@ -39,7 +39,7 @@ const updateCartValidator = async (req, res, next) => {
       res.status(412)
       .send({
         message: 'validation failed',
-        success: false,
+        status: "error",
         data: err
       });
     } else {
@@ -61,7 +61,7 @@ const deleteCartValidator = async (req, res, next) => {
       res.status(412)
       .send({
         message: 'validation failed',
-        success: false,
+        status: "error",
         data: err
       });
     } else {
