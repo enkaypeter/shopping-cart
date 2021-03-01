@@ -1,9 +1,7 @@
 import db from "../../loaders/database";
 const { products } =  db;
 export default class ProductRepository {
-  constructor() {
-    this.db = db.sequelize;
-  }
+  constructor() {}
 
 
   async getById(productId) {
@@ -13,10 +11,18 @@ export default class ProductRepository {
       },
       raw: true
     });
-
+    
     const [singleProduct] = singleProducts;
     return singleProduct;
   }
+
+
+  async getProductById(productId) {
+    let allProducts   = await this.findAll();
+    const singleProducts = await this.getById(productId);
+    return singleProducts;
+  }
+
 
   async updateById(productId, payload) {
     const updatedProduct = await products.update(payload, {
@@ -30,7 +36,7 @@ export default class ProductRepository {
     return updatedProductResponse;
   }
 
-  static async findAll() {
+  async findAll() {
     const allProducts =  await products.findAll()
     return allProducts;
   }
@@ -41,7 +47,7 @@ export default class ProductRepository {
   }
 
   async getAllProducts() {
-    let allProducts   = await ProductRepository.findAll()
+    let allProducts   = await this.findAll()
     return allProducts;
   }
 

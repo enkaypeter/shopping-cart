@@ -1,10 +1,7 @@
 import db from "../../loaders/database";
 const { cartItems, carts } =  db;
 export default class CartRepository {
-  constructor() {
-    this.db = db.sequelize;
-    this.cartItems = {};
-  }
+  constructor() {}
 
   async findAll() {
     const allCarts =  await carts.findAll();

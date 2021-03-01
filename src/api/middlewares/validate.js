@@ -1,8 +1,8 @@
 import  Validator from "validatorjs";
 import ProductRepository from "../repositiories/products";
 import CartRepository from "../repositiories/cart";
-
 const productRepo = new ProductRepository();
+
 const numeric = function (val) {
   let num;
 
@@ -15,6 +15,7 @@ const numeric = function (val) {
 }
 
 Validator.registerAsync('is_exists', async (value,  attribute, data, passes) => {
+
   let msg = `${data} does not exists.`;
   if(numeric(value) == false ){
     msg = `${value} should be a number.`
@@ -28,7 +29,7 @@ Validator.registerAsync('is_exists', async (value,  attribute, data, passes) => 
     let singleCart = await cartRepo.getCartById(value);
     singleCart !== undefined ? passes() : passes(false, msg);
   } else if (getModelName == "product") {
-    let singleProduct = await productRepo.getById(value);  
+    let singleProduct = await productRepo.getProductById(value);  
     singleProduct !== undefined ? passes() : passes(false, msg); // return false if product is not found
   }
 });
@@ -45,8 +46,12 @@ Validator.registerAsync("is_valid", async (value, attribute, data, passes) => {
   }
 
   const productId = attribute;
-  const singleProduct = await productRepo.getById(productId);
-  singleProduct == undefined ? passes(false) : singleProduct;
+  const singleProduct = await productRepo.getProductById(productId);
+  if(singleProduct === undefined){
+    passes(false);
+    return;
+  }
+
   switch (data) {
     case 'price':
       msg = `${data} has changed and is now ${singleProduct.price}`
@@ -72,8 +77,11 @@ Validator.registerAsync("is_available", async (value, attribute, data, passes) =
   }
 
   const productId = attribute;
-  const singleProduct = await productRepo.getById(productId);
-  singleProduct == undefined ? passes(false) : singleProduct;
+  const singleProduct = await productRepo.getProductById(productId);
+  if(singleProduct === undefined){
+    passes(false);
+    return;
+  }
   
   if(value > singleProduct.quantity){
     msg = `${data} requested is more than available inventory of ${singleProduct.quantity}`;

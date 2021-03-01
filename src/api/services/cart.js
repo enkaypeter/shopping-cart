@@ -4,9 +4,9 @@ import ProductRepository from "../repositiories/products";
 const productsRepository = new ProductRepository();
 
 export default class CartService extends CartRepository {
-  constructor(){
+  constructor(prodRep){
     super();
-    this.response = {}
+    this.prodRep = prodRep
   }
 
   calculateNewProductQuantity(existingCartQty, productQty, incomingCartQty) {
@@ -42,13 +42,13 @@ export default class CartService extends CartRepository {
 
   async addToCart (cartItemData) {
     let newProductQuantity;
-    let cart = await this.getCartById(1); // assumes there's an already exisitng cart with an id of 1.
+    let cart = await this.getCartById(cartItemData.cart_id); // assumes there's an already exisitng cart with an id of 1.
     const productId = cartItemData.product_id;
     
     // create a dummy cart if a cart with id = 1 doesn't exist.
     let cartResponse = cart == undefined ? await this.createDummyCart() : cart
     const cartId = cartResponse.id;
-    const singleProduct = await productsRepository.getById(cartItemData.product_id);
+    const singleProduct = await this.prodRep.getById(cartItemData.product_id);
     if(singleProduct.quantity < cartItemData.quantity) {
       throw new Error ("quantity requested is more than inventory available.")
     };
@@ -69,7 +69,7 @@ export default class CartService extends CartRepository {
     const deductProductPayload = this.getDeductProductPayload(singleProduct.id, newProductQuantity);    
     try {
       // update product inventory
-      await productsRepository.updateProductInventory(productId, deductProductPayload);
+      await this.prodRep.updateProductInventory(productId, deductProductPayload);
       
       // create cartItems
       const { price, sku, quantity } = cartItemData;
