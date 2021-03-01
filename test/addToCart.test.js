@@ -5,23 +5,25 @@ import { clearDatabase, closeDatabaseConnection, seedProductsTable} from "./util
 import ProductRepository from "../src/api/repositiories/products";
 import CartRepository from "../src/api/repositiories/cart";
 import CartService from "../src/api/services/cart";
-
-const prodRepo = new ProductRepository();
+import cart from "../src/api/routes/cart";
 
 const app = express();
 require('../src/loaders').default({ expressApp: app }).then()
 
+const cartRepository    = new CartRepository();
+const productRepository = new ProductRepository();
+
+
 describe('POST /carts', () => {
-  beforeAll(async (done) => {
+  beforeEach(async (done) => {
     await clearDatabase();
     await seedProductsTable();
     done();
   });
   
   it('should add a product to cart ', async (done) => {
-    const cartRepo  =  new CartRepository();
-    let cart        = await cartRepo.createDummyCart();
-    let products    = await prodRepo.getAllProducts();
+    let cart        = await cartRepository.createDummyCart();
+    let products    = await productRepository.getAllProducts();
 
 
     // correct payload with no errors.
@@ -39,21 +41,20 @@ describe('POST /carts', () => {
     expect(response.body.data).not.toBeNull()
 
     // product should exist in cart.
-    const cartRepository    = new CartRepository();
     const cartItemResponse  = cartRepository.findCartItem({productId: addToCartPayload.product_id});
     expect(cartItemResponse).not.toBeNull()    
     done();
   });
 
   it('should fail validation if product sku and price is wrong', async (done) => {
-    const cartRepo  =  new CartRepository();
-    let carts       = await cartRepo.createDummyCart();
-    let products    = await prodRepo.getAllProducts();
+    // const cartRepository  =  new CartRepository();
+    let cart       = await cartRepository.createDummyCart();
+    let products    = await productRepository.getAllProducts();
 
 
     // incorrect payload with incorrect sku and price.
     const addToCartPayload = {
-      cart_id: carts.id,
+      cart_id: cart.id,
       product_id: products[0].id,
       quantity: 3,
       sku: "BB-AA-WRONG",
@@ -68,9 +69,8 @@ describe('POST /carts', () => {
   });
 
   it('should fail validation if quantity requested is more than available inventory', async (done) => {
-    const cartRepo  =  new CartRepository();
-    let carts       = await cartRepo.createDummyCart();
-    let products    = await prodRepo.getAllProducts();
+    let carts       = await cartRepository.createDummyCart();
+    let products    = await productRepository.getAllProducts();
 
 
     // incorrect payload with incorrect product quantity.
@@ -90,23 +90,20 @@ describe('POST /carts', () => {
   })
 
   it('should update product inventory', async(done) => {
-    const cartRepository    =  new CartRepository();
     const cartService       = new CartService();
-    const productRepository = new ProductRepository();
+    const singleProduct     = await productRepository.getAllProducts();
+    let cart               = await cartRepository.createDummyCart();
 
 
-    let carts       = await cartRepository.createDummyCart();
 
     // correct payload with no errors.
     const addToCartPayload = {
-      cart_id: carts.id,
-      product_id: 2,
+      cart_id: cart.id,
+      product_id: singleProduct[0].id,
       quantity: 3,
-      sku: "RD-CNV-43",
-      price: 250
+      sku: singleProduct[0].sku,
+      price: singleProduct[0].price
     };
-
-    const singleProductResponse_1  = await productRepository.getById(addToCartPayload.product_id);
     
     // add to cart
     const addToCartResponse = await cartService.addToCart(addToCartPayload);
@@ -119,7 +116,7 @@ describe('POST /carts', () => {
 
     // verify inventory 
     const singleProductResponse_2   = await productRepository.getById(addToCartPayload.product_id);
-    const currentInventory  = Math.abs(getCartItemResponse.quantity - singleProductResponse_1.quantity);
+    const currentInventory          = Math.abs(singleProduct[0].quantity - getCartItemResponse.quantity);
     expect(currentInventory).toBe(singleProductResponse_2.quantity);
     done();
   })

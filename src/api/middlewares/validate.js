@@ -84,7 +84,7 @@ Validator.registerAsync("is_available", async (value, attribute, data, passes) =
   }
   
   if(value > singleProduct.quantity){
-    msg = `${data} requested is more than available inventory of ${singleProduct.quantity}`;
+    msg = `${data} requested is more than available inventory of ${singleProduct.quantity}.`;
     passes(false, msg);
     return;
   }
