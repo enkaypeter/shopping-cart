@@ -4,6 +4,7 @@ import express from 'express';
 import { clearDatabase, closeDatabaseConnection, seedProductsTable} from "./utils"
 import ProductRepository from "../src/api/repositiories/products";
 import CartRepository from "../src/api/repositiories/cart";
+import CartService from "../src/api/services/cart";
 
 const prodRepo = new ProductRepository();
 
@@ -14,19 +15,13 @@ describe('POST /carts', () => {
   beforeAll(async (done) => {
     await clearDatabase();
     await seedProductsTable();
-    // await seedCartItem();
     done();
   });
-
-  it('should ', async () => {
-    expect(1).toBe(1)
-  })
-
   
   it('should add a product to cart ', async (done) => {
-    const cartRepo =  new CartRepository();
-    let cart = await cartRepo.createDummyCart();
-    let products = await prodRepo.getAllProducts();
+    const cartRepo  =  new CartRepository();
+    let cart        = await cartRepo.createDummyCart();
+    let products    = await prodRepo.getAllProducts();
 
 
     // correct payload with no errors.
@@ -44,16 +39,16 @@ describe('POST /carts', () => {
     expect(response.body.data).not.toBeNull()
 
     // product should exist in cart.
-    const cartRepository = new CartRepository();
-    const cartItemResponse = cartRepository.findCartItem({productId: addToCartPayload.product_id});
+    const cartRepository    = new CartRepository();
+    const cartItemResponse  = cartRepository.findCartItem({productId: addToCartPayload.product_id});
     expect(cartItemResponse).not.toBeNull()    
     done();
   });
 
   it('should fail validation if product sku and price is wrong', async (done) => {
-    const cartRepo =  new CartRepository();
-    let carts = await cartRepo.createDummyCart();
-    let products = await prodRepo.getAllProducts();
+    const cartRepo  =  new CartRepository();
+    let carts       = await cartRepo.createDummyCart();
+    let products    = await prodRepo.getAllProducts();
 
 
     // incorrect payload with incorrect sku and price.
@@ -61,8 +56,8 @@ describe('POST /carts', () => {
       cart_id: carts.id,
       product_id: products[0].id,
       quantity: 3,
-      sku: products[0].id,
-      price: products[0].price
+      sku: "BB-AA-WRONG",
+      price: 2000.50
     };
 
     const response = await request(app).post('/api/carts').send(addToCartPayload)
@@ -73,16 +68,18 @@ describe('POST /carts', () => {
   });
 
   it('should fail validation if quantity requested is more than available inventory', async (done) => {
-    const cartRepo =  new CartRepository();
-    let carts = await cartRepo.createDummyCart();
+    const cartRepo  =  new CartRepository();
+    let carts       = await cartRepo.createDummyCart();
+    let products    = await prodRepo.getAllProducts();
+
 
     // incorrect payload with incorrect product quantity.
     const addToCartPayload = {
       cart_id: carts.id,
-      product_id: 2,
+      product_id: products[0].id,
       quantity: 3000,
       sku: "RD-CNV-43",
-      price: 250.00
+      price:  products[0].price
     };
 
     const response = await request(app).post('/api/carts').send(addToCartPayload)
@@ -93,8 +90,12 @@ describe('POST /carts', () => {
   })
 
   it('should update product inventory', async(done) => {
-    const cartRepo =  new CartRepository();
-    let carts = await cartRepo.createDummyCart();
+    const cartRepository    =  new CartRepository();
+    const cartService       = new CartService();
+    const productRepository = new ProductRepository();
+
+
+    let carts       = await cartRepository.createDummyCart();
 
     // correct payload with no errors.
     const addToCartPayload = {
@@ -102,13 +103,30 @@ describe('POST /carts', () => {
       product_id: 2,
       quantity: 3,
       sku: "RD-CNV-43",
-      price: 250.00
+      price: 250
     };
 
-    const productRepository = new ProductRepository();
-    const productResponse = await productRepository.getById(addToCartPayload.product_id);
+    const singleProductResponse_1  = await productRepository.getById(addToCartPayload.product_id);
+    
+    // add to cart
+    const addToCartResponse = await cartService.addToCart(addToCartPayload);
+    expect(addToCartResponse).toBeDefined();
 
-    expect(productResponse).not.toBeNull();
+    // get an item from cart
+    const getCartItemResponse = await cartRepository.getCartItem({productId: addToCartPayload.product_id});
+    expect(getCartItemResponse).toBeDefined();
+
+
+    // verify inventory 
+    const singleProductResponse_2   = await productRepository.getById(addToCartPayload.product_id);
+    const currentInventory  = Math.abs(getCartItemResponse.quantity - singleProductResponse_1.quantity);
+    expect(currentInventory).toBe(singleProductResponse_2.quantity);
     done();
-  })  
+  })
+
+  afterAll(async (done) => {
+    await clearDatabase();
+    await closeDatabaseConnection();
+    done();
+  });
 })

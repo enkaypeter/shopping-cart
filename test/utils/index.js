@@ -16,34 +16,22 @@ const truncate  = async (model) => {
   if (model) {
     return truncateTable(model);
   }
-  await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 0', null, { raw: true }); //<---- Do not check referential constraints
+  await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 0', null, { raw: true }); // do not check referential constraints
   return Promise.all(
-      Object.keys(models).map((key) => {
-          if (['sequelize', 'Sequelize'].includes(key)) return null;
-          return truncateTable(key);
-      })
+    Object.keys(models).map((key) => {
+      if (['sequelize', 'Sequelize'].includes(key)) return null;
+      return truncateTable(key);
+    })
   );
 }
 
 module.exports = {
   clearDatabase: async () => {
-    const destroyProps = {
-      where: {},
-      truncate: true,
-      force: true,
-      cascade: true,
-      restartIdentity: true,
-    };
-
     await truncate(cartItems)
     await truncate(carts)
     await truncate(products)
 
     db.sequelize.query('SET FOREIGN_KEY_CHECKS = 1', { raw: true }); 
-
-    // await cartItems.destroy(destroyProps);
-    // await carts.destroy(destroyProps);
-    // await products.destroy(destroyProps);
   },
 
   closeDatabaseConnection: async () => {
@@ -51,13 +39,10 @@ module.exports = {
   },
 
   seedProductsTable: async () => {
-
     await products.bulkCreate(productsData).catch(err => {
       throw new Error ("There was a problem seeding products table")
     })
-
     console.log("products table seeded!")
-
   },
 
   seedCartItem: async() => {
@@ -80,16 +65,12 @@ module.exports = {
         };
   
         await cartRepository.saveCartItems(addToCartPayload);
-        console.log("cart items seeded cleared!")
+        console.log("cart items seeded!")
 
       }      
     } catch (error) {
       console.log(error);
       throw new Error ("There was a problem seeding cart items");
     }
-  },
-
-
-
-// once you get the response from truncate, run this, and it will set foreign key checks again
+  }
 }

@@ -1,8 +1,5 @@
 import CartService from "../services/cart";
-import ProductRepository from "../repositiories/products";
-
-const productRep = new ProductRepository();
-const cartService = new CartService(productRep);
+const cartService = new CartService();
 
 const headers = {
   'Content-Type': 'application/json'
