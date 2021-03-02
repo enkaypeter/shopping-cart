@@ -3,6 +3,7 @@ const addToCartValidator = async (req, res, next) => {
 
   //TODO: Remember to check if incoming object is an object or an array
   const validationRule = {
+    "cart_id": "required",
     "product_id": "required|numeric|is_exists",
     "quantity": `required|numeric|is_available:${req.body.product_id}`,
     "price": `required|is_decimal|is_valid:${req.body.product_id}`,

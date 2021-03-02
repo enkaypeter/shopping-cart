@@ -1,0 +1,55 @@
+Enum product_stock_level {
+  out_of_stock
+  in_stock
+  running_low [note: 'less than 10']
+}
+
+Table products {
+  id int [pk, increment]
+  name varchar
+  sku varchar [not null]
+  price decimal
+  category varchar
+  stock_level products_stock_level
+  createdAt datetime [default: `now()`]
+  updatedAt datetime [default: `now()`]
+  
+  Indexes {
+    ( stock_level) [name:'product_stock_level']
+    id [unique]
+  }
+}
+
+Table carts {
+  id int [pk, increment]
+  firstName varchar
+  lastName varchar
+  mobile varchar
+  email varchar
+  street varchar
+  city varchar
+  state varchar
+  country varchar
+  createdAt datetime [default: `now()`]
+  updatedAt datetime [default: `now()`]
+  
+  Indexes {
+    id [unique]
+  }
+}
+
+Table cartItems {
+  id int [pk]
+  productId int [ref: > products.id]
+  cartId int [ref: > carts.id]
+  sku varchar
+  price decimal
+  quantity int
+  createdAt datetime [default: `now()`]
+  updatedAt datetime [default: `now()`]
+  
+  Indexes {
+    id [unique]
+  }
+}
+

@@ -1,3 +1,6 @@
+# Basket - A small shopping cart application
+
+#
 # How to run
 ### Install dependencies
 ```bash
