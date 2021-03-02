@@ -103,7 +103,7 @@ describe('POST /carts', () => {
     };
     
     // add to cart
-    const addToCartResponse = await cartService.addToCart(addToCartPayload);
+    const addToCartResponse = await cartService.makeAddToCart(addToCartPayload);
     expect(addToCartResponse).toBeDefined();
 
     // get an item from cart

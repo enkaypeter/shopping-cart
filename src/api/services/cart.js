@@ -54,7 +54,7 @@ export default class CartService extends CartRepository {
     let getcartItemResponse = await this.getCartItem({productId: productId});
     if(getcartItemResponse !== null) {
       newProductQuantity = this.calculateNewProductQuantity(getcartItemResponse.quantity, singleProduct.quantity, cartItemData.quantity);
-      if (newProductQuantity == null) {
+      if (newProductQuantity === null) {
         return cartItemData;
       }
     } else {
@@ -80,7 +80,7 @@ export default class CartService extends CartRepository {
       };
 
       let saveCartItemsResponse = getcartItemResponse !== null ? 
-        await this.updateCartItem(saveCartItemPayload, {productId: productId}) :
+        await this.updateCartItem(saveCartItemPayload, {productId}) :
       await this.saveToCart(saveCartItemPayload)
 
       return saveCartItemsResponse
@@ -102,17 +102,17 @@ export default class CartService extends CartRepository {
 
     // check if the product already exists in cart.
     let getcartItemResponse = await this.getCartItem({productId: productId});
-    if(getcartItemResponse == null) {
+    if(getcartItemResponse === null) {
       throw new Error ("product does not exist in specified cart.")
     }
 
-    if(cartItemData.quantity == 0){
+    if(cartItemData.quantity === 0){
       throw new Error (`cannot update cart quantity with ${cartItemData.quantity}.`)
     }
 
     if(getcartItemResponse !== null) {
       newProductQuantity = this.calculateNewProductQuantity(getcartItemResponse.quantity, singleProduct.quantity, cartItemData.quantity);
-      if (newProductQuantity == null) {
+      if (newProductQuantity === null) {
         return cartItemData;
       }
     }
@@ -126,8 +126,9 @@ export default class CartService extends CartRepository {
       const updateCartItemPayload = { quantity };
 
       // update cartItem with new quanitity
-      let saveCartItemsResponse = await this.updateCartItem(updateCartItemPayload, {productId: productId});
-      return saveCartItemsResponse;
+      await this.updateCartItem(updateCartItemPayload, {productId: productId});
+      const updatedCartItemResponse = await this.getCartItem({productId});
+      return updatedCartItemResponse;
     } catch (error) {
       console.error(error);
       throw new Error(error);      
@@ -142,7 +143,7 @@ export default class CartService extends CartRepository {
 
     // check if the product already exists in cart
     let getcartItemResponse = await this.getCartItem({productId: productId});
-    if(getcartItemResponse == null) {
+    if(getcartItemResponse === null) {
       throw new Error ("product does not exist in specified cart.")
     }
   
