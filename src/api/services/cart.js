@@ -10,14 +10,12 @@ export default class CartService extends CartRepository {
 
   calculateNewProductQuantity(existingCartQty, productQty, incomingCartQty) {
     let newProductQuantity;
-    const incomingQuantity = incomingCartQty;
-    const existingQuantity = existingCartQty;
 
-    if(incomingQuantity < existingQuantity) {
-      newProductQuantity = productQty + Math.abs(existingQuantity - incomingQuantity)
-    } else if (incomingQuantity > existingQuantity) {
-      newProductQuantity = productQty - Math.abs(existingQuantity - incomingQuantity)
-    } else { // if incomingQuantity and existingQuantity is the same return cartItemData
+    if(incomingCartQty < existingCartQty) {
+      newProductQuantity = productQty + Math.abs(existingCartQty - incomingCartQty)
+    } else if (incomingCartQty > existingCartQty) {
+      newProductQuantity = productQty - Math.abs(existingCartQty - incomingCartQty)
+    } else { // if incomingCartQty and existingCartQty is the same return cartItemData
       return null; // no action is being performed because it's a duplicate request
     }
     return newProductQuantity;
@@ -29,9 +27,9 @@ export default class CartService extends CartRepository {
       quantity: newProductQuantity
     }
 
-    if(newProductQuantity == 10) {
+    if(newProductQuantity === 10) {
       deductProductPayload.stock_level = 'running_low'
-    } else if (newProductQuantity == 0) {
+    } else if (newProductQuantity === 0) {
       deductProductPayload.stock_level = 'out_of_stock'
     }
 

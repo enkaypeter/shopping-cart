@@ -5,7 +5,7 @@ import { clearDatabase, closeDatabaseConnection, seedProductsTable} from "./util
 import ProductRepository from "../src/api/repositiories/products";
 import CartRepository from "../src/api/repositiories/cart";
 
-const cartRepository    = new CartRepository();
+const cartRepository = new CartRepository();
 const productRepository = new ProductRepository();
 
 const app = express();
@@ -30,10 +30,10 @@ describe('DELETE /carts', () => {
     // correct payload with no errors.
     const addToCartPayload = {
       cart_id: cart.id,
-      product_id: products[4].id,
+      product_id: products[3].id,
       quantity: 3,
-      sku: products[4].sku,
-      price: products[4].price
+      sku: products[3].sku,
+      price: products[3].price
     };
 
     // Add product to cart.

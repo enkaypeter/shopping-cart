@@ -4,8 +4,7 @@ export default class CartRepository {
   constructor() {}
 
   async findAll() {
-    const allCarts =  await carts.findAll();
-    return allCarts
+    return await carts.findAll();
   }
 
   async findById(cartId) {
@@ -19,7 +18,7 @@ export default class CartRepository {
   }
 
   async deleteById(query){
-    await cartItems.destroy({
+    return await cartItems.destroy({
       where: query
     });
   }
@@ -49,12 +48,11 @@ export default class CartRepository {
   }
 
   async getCartItem(payload){
-    const carts = await this.findCartItem(payload);
-    return carts;
+    return await this.findCartItem(payload);
   }
 
   async deleteCartItemById(payload) {
-    await this.deleteById(payload);
+    return await this.deleteById(payload);
   }
 
   async getCartById(cartId) {
@@ -64,8 +62,7 @@ export default class CartRepository {
   }
 
   async saveCartItems(payload) {
-    const allCartItems = await cartItems.create(payload)
-    return allCartItems;
+    return await cartItems.create(payload)
   }
 
   async createDummyCart(){
@@ -79,13 +76,8 @@ export default class CartRepository {
     return cart;
   }
 
-  async save(){
-
-  }
-
   async saveToCart(payload) {
-    let allCartItems   = await this.saveCartItems(payload)
-    return allCartItems;
+    return await this.saveCartItems(payload)
   }
 
 

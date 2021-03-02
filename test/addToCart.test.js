@@ -10,7 +10,7 @@ import cart from "../src/api/routes/cart";
 const app = express();
 require('../src/loaders').default({ expressApp: app }).then()
 
-const cartRepository    = new CartRepository();
+const cartRepository = new CartRepository();
 const productRepository = new ProductRepository();
 
 
@@ -22,8 +22,8 @@ describe('POST /carts', () => {
   });
   
   it('should add a product to cart ', async (done) => {
-    let cart        = await cartRepository.createDummyCart();
-    let products    = await productRepository.getAllProducts();
+    let cart = await cartRepository.createDummyCart();
+    let products = await productRepository.getAllProducts();
 
 
     // correct payload with no errors.
@@ -48,9 +48,8 @@ describe('POST /carts', () => {
 
   it('should fail validation if product sku and price is wrong', async (done) => {
     // const cartRepository  =  new CartRepository();
-    let cart       = await cartRepository.createDummyCart();
-    let products    = await productRepository.getAllProducts();
-
+    let cart = await cartRepository.createDummyCart();
+    let products = await productRepository.getAllProducts();
 
     // incorrect payload with incorrect sku and price.
     const addToCartPayload = {
@@ -69,8 +68,8 @@ describe('POST /carts', () => {
   });
 
   it('should fail validation if quantity requested is more than available inventory', async (done) => {
-    let carts       = await cartRepository.createDummyCart();
-    let products    = await productRepository.getAllProducts();
+    let carts = await cartRepository.createDummyCart();
+    let products = await productRepository.getAllProducts();
 
 
     // incorrect payload with incorrect product quantity.
@@ -90,11 +89,9 @@ describe('POST /carts', () => {
   })
 
   it('should update product inventory', async(done) => {
-    const cartService       = new CartService();
-    const singleProduct     = await productRepository.getAllProducts();
-    let cart               = await cartRepository.createDummyCart();
-
-
+    const cartService = new CartService();
+    const singleProduct = await productRepository.getAllProducts();
+    let cart = await cartRepository.createDummyCart();
 
     // correct payload with no errors.
     const addToCartPayload = {
@@ -115,8 +112,8 @@ describe('POST /carts', () => {
 
 
     // verify inventory 
-    const singleProductResponse_2   = await productRepository.getById(addToCartPayload.product_id);
-    const currentInventory          = Math.abs(singleProduct[0].quantity - getCartItemResponse.quantity);
+    const singleProductResponse_2 = await productRepository.getById(addToCartPayload.product_id);
+    const currentInventory = Math.abs(singleProduct[0].quantity - getCartItemResponse.quantity);
     expect(currentInventory).toBe(singleProductResponse_2.quantity);
     done();
   })

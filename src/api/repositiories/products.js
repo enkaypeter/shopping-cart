@@ -18,9 +18,7 @@ export default class ProductRepository {
 
 
   async getProductById(productId) {
-    let allProducts   = await this.findAll();
-    const singleProducts = await this.getById(productId);
-    return singleProducts;
+    return await this.getById(productId);
   }
 
 
@@ -42,8 +40,7 @@ export default class ProductRepository {
   }
 
   async updateProductInventory(productId, saveProductPayload) {
-    let updateResponse = await this.updateById(productId, saveProductPayload);
-    return updateResponse;
+    return await this.updateById(productId, saveProductPayload);
   }
 
   async getAllProducts() {

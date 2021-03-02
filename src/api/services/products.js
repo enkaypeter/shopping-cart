@@ -5,7 +5,6 @@ export default class ProductService extends ProductRepository {
   }
 
   async fetchAlProducts() {
-    const allProducts = await this.getAllProducts();
-    return allProducts;
+    return await this.getAllProducts();
   }
 }

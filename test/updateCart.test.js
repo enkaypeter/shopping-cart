@@ -57,8 +57,8 @@ describe('PATCH /carts', () => {
 
 
     // verify inventory 
-    const singleProductResponse_2   = await productRepository.getById(updateCartPayload.product_id);
-    const currentInventory          = Math.abs(products[3].quantity - getCartItemResponse.quantity);
+    const singleProductResponse_2 = await productRepository.getById(updateCartPayload.product_id);
+    const currentInventory = Math.abs(products[3].quantity - getCartItemResponse.quantity);
     expect(currentInventory).toBe(singleProductResponse_2.quantity);
     done();
   });
