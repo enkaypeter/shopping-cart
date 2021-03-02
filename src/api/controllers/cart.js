@@ -9,7 +9,7 @@ module.exports = {
   addItem: async (req, res) => {
     try {
       const { body } = req;
-      const response = await cartService.addToCart(body);
+      const response = await cartService.makeAddToCart(body);
       return {
         headers,
         message: "item added to cart successfully",
@@ -72,6 +72,31 @@ module.exports = {
       return {
         headers,
         message: "failed to remove product from cart.",
+        status: "error",
+        statusCode: 400,
+        body:{
+          error: e.message
+        }
+      }
+    }
+  },
+
+  getCartItem: async (req, res) => {
+    try {
+      const { cart_id } = req.params;
+      const response = await cartService.makeGetCartItem(cart_id);
+      return {
+        headers,
+        message: "cart items fetched successfully.",
+        status: "success",
+        statusCode: 200,
+        body: response
+      }
+    } catch (e) {
+      console.error(e);
+      return {
+        headers,
+        message: "failed to fetch cart items successfully.",
         status: "error",
         statusCode: 400,
         body:{

@@ -1,5 +1,6 @@
+import { query } from "express";
 import db from "../../loaders/database";
-const { cartItems, carts } =  db;
+const { cartItems, carts, products } =  db;
 export default class CartRepository {
   constructor() {}
 
@@ -47,10 +48,25 @@ export default class CartRepository {
     return cartItem;
   }
 
+  async findCartItemAsoc(query) {
+    const cartItemResponse = await cartItems.findAll({
+      attributes: ['id', 'sku', 'price', 'quantity'],
+      where: query,
+      raw: true,
+      include: [carts],
+    })
+
+    return cartItemResponse;
+  }
+
+  async getCartItemAsoc(payload) {
+    return await this.findCartItemAsoc(payload); 
+  }
+
   async getCartItem(payload){
     return await this.findCartItem(payload);
   }
-
+ 
   async deleteCartItemById(payload) {
     return await this.deleteById(payload);
   }

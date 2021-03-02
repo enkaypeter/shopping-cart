@@ -3,7 +3,7 @@ const addToCartValidator = async (req, res, next) => {
 
   //TODO: Remember to check if incoming object is an object or an array
   const validationRule = {
-    "cart_id": "required",
+    "cart_id": "required|numeric",
     "product_id": "required|numeric|is_exists",
     "quantity": `required|numeric|is_available:${req.body.product_id}`,
     "price": `required|is_decimal|is_valid:${req.body.product_id}`,
@@ -71,8 +71,27 @@ const deleteCartValidator = async (req, res, next) => {
   });
 }
 
+const getCartItemsValidator = async (req, res, next) => {
+  const validationRule = {
+    "cart_id": "required|numeric|is_exists",
+  };
+
+  await Validator(req.params, validationRule, {}, (err, status) => {
+    if(!status) {
+      res.status(412)
+      .send({
+        message: 'validation failed',
+        status: "error",
+        data: err
+      });
+    } else {
+      next();
+    }
+  });
+}
+
 
 module.exports = {
   addToCartValidator, updateCartValidator,
-  deleteCartValidator
+  deleteCartValidator, getCartItemsValidator
 }

@@ -9,7 +9,7 @@
     "create:db": "node_modules/.bin/sequelize db:create",
     "migrate": "node_modules/.bin/sequelize db:migrate",
     "migrate:reset": "node_modules/.bin/sequelize db:migrate:undo:all && yarn run migrate",
-    "test:integration": "cross-env NODE_ENV=test yarn run migrate:reset && jest -c jest.config.js ./test --runInBand --detectOpenHandles --forceExit"
+    "test:integration": "cross-env NODE_ENV=test yarn run create:db migrate:reset && jest -c jest.config.js ./test --runInBand --detectOpenHandles --forceExit"
   },
   "dependencies": {
     "@babel/cli": "^7.4.4",

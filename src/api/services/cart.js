@@ -37,7 +37,7 @@ export default class CartService extends CartRepository {
   }
 
 
-  async addToCart (cartItemData) {
+  async makeAddToCart (cartItemData) {
     let newProductQuantity;
     let cart = await this.getCartById(cartItemData.cart_id); // assumes there's an already exisitng cart with an id of 1.
     const productId = cartItemData.product_id;
@@ -158,6 +158,12 @@ export default class CartService extends CartRepository {
       console.error(error);
       throw new Error(error);      
     }    
+  }
+
+  async makeGetCartItem(cartId){
+    // fetch cart items with cart
+    let cartResponse = await this.getCartItemAsoc({cartId}); //TODO: format fetched associations 
+    return cartResponse;
   }
 
   
